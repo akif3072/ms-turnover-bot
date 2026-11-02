@@ -1,49 +1,165 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>MS Turnover Calculator</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MONEY STUDIO</title>
 <style>
-:root{color-scheme:dark;--bg:#17212B;--panel:#253A4B;--mint:#75E4A2;--muted:#A2B3BF}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.container{max-width:480px;margin:auto;padding:20px 16px 35px}.header{display:flex;align-items:center;gap:12px;margin-bottom:25px}.logo{display:grid;place-items:center;background:#28483A;color:#74E7A2;border-radius:12px;width:50px;height:50px;font-size:25px}h2{font-size:19px;margin:0 0 5px}.subtitle,.label{color:var(--muted);font-size:13px}.label{display:block;margin-bottom:10px}.input-box{background:var(--panel);border-radius:12px;display:flex;align-items:center;padding:12px 16px;gap:10px}.input-box:focus-within{outline:1px solid #75E4A2}.dollar{color:#76E6A4;font-size:25px;font-weight:bold}input{background:transparent;border:0;outline:0;color:white;font-size:23px;width:100%;min-width:0}.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}.card{background:var(--panel);border-radius:12px;padding:16px 12px}.card .label{font-size:11px}.value{color:var(--mint);font-size:clamp(17px,5vw,23px);font-weight:750;margin-top:8px;overflow-wrap:anywhere}h3{font-size:15px;margin:25px 0 12px}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:13px 8px;border-bottom:1px solid #344654}th{color:#A8BDCA;font-size:12px}td{font-size:14px}td:last-child{color:#80E5A4;font-weight:600}.min{color:var(--mint);font-size:11px;margin-left:4px}.warning{background:#28333E;border-radius:12px;padding:15px;margin-top:20px}.warning strong{color:#F7CB78}.warning p{font-size:13px;line-height:1.6}button{width:100%;background:var(--mint);color:#14231C;border:0;border-radius:12px;padding:15px;margin-top:18px;font-weight:bold;font-size:15px;cursor:pointer;transition:transform .18s ease,filter .18s ease}button:active{transform:scale(.98)}button:hover{filter:brightness(1.06)}.error{color:#F5B6A9;margin-top:15px;font-size:13px}.animate{animation:fade .3s ease}@keyframes fade{from{opacity:.4;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+:root{
+  --bg:#080F1E;
+  --panel:#121E32;
+  --green:#43FF9B;
+  --blue:#72D8FF;
+  --gold:#FFCA58;
+  --red:#FF6174;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(ellipse at top,#16334A,var(--bg) 65%);
+  color:white;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.app{max-width:480px;margin:auto;padding:22px 16px 35px}
+.header{text-align:center;margin-bottom:25px}
+.logo{
+  display:block;
+  width:230px;
+  max-width:85%;
+  margin:0 auto 18px;
+  border-radius:9px;
+}
+h1{font-size:23px;letter-spacing:2px;margin:0}
+.subtitle{
+  color:var(--green);
+  font-size:11px;
+  letter-spacing:3px;
+  margin-top:8px;
+}
+.live{
+  display:inline-block;
+  margin-top:15px;
+  padding:7px 15px;
+  border:1px solid #277A60;
+  border-radius:30px;
+  color:var(--green);
+  font-size:11px;
+  letter-spacing:2px;
+}
+.dot{
+  display:inline-block;
+  width:7px;height:7px;
+  background:var(--green);
+  border-radius:50%;
+  margin-right:7px;
+  box-shadow:0 0 12px var(--green);
+  animation:pulse 1.5s infinite;
+}
+@keyframes pulse{
+  50%{opacity:.3;transform:scale(.7)}
+}
+.card{
+  display:block;
+  width:100%;
+  text-align:left;
+  color:white;
+  text-decoration:none;
+  background:var(--panel);
+  border:1px solid #2B405B;
+  border-radius:17px;
+  padding:23px 20px;
+  margin-bottom:14px;
+  cursor:pointer;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.card:active{transform:scale(.97)}
+.card.green{border-color:#247A59}
+.card.green:hover{box-shadow:0 0 25px #21F48A33}
+.card.blue{border-color:#28658B}
+.card.blue:hover{box-shadow:0 0 25px #43BFFF33}
+.icon{font-size:27px;margin-bottom:10px}
+.card h2{font-size:17px;margin:0 0 7px}
+.card p{color:#AABCD2;font-size:12px;margin:0;line-height:1.6}
+.green h2{color:var(--green)}
+.blue h2{color:var(--blue)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.small{text-align:center;padding:20px 10px}
+.small h2{font-size:14px;color:var(--gold)}
+.warning{
+  background:#351923;
+  border:1px solid #713044;
+  color:#FFD5DB;
+  padding:15px;
+  border-radius:13px;
+  font-size:12px;
+  line-height:1.6;
+  margin-top:10px;
+}
+.footer{
+  text-align:center;
+  color:#70839F;
+  font-size:10px;
+  margin-top:28px;
+  letter-spacing:2px;
+}
 </style>
 </head>
 <body>
-<div class="container">
- <div class="header"><div class="logo">▦</div><div><h2>MS Turnover Calculator</h2><div class="subtitle">Trading turnover reward estimator</div></div></div>
- <label class="label" for="balance">Enter your balance (USD)</label>
- <div class="input-box"><span class="dollar">$</span><input id="balance" type="number" min="10" step="any" value="10" inputmode="decimal"></div>
- <div id="results">
-  <div class="cards"><div class="card"><div class="label">Minimum turnover</div><div class="value" id="minimum">$500</div></div><div class="card"><div class="label">Reward at minimum</div><div class="value" id="reward">$50</div></div></div>
-  <h3>Turnover &amp; profit breakdown</h3>
-  <table><thead><tr><th>Turnover</th><th>Profit reward</th></tr></thead><tbody id="breakdown"></tbody></table>
-  <div class="warning"><strong>⚠️ Important withdrawal rule</strong><p>If you withdraw your profit or balance, your turnover will reset to $0 and must be calculated again from the beginning.</p></div>
-  <button id="copy" type="button">📋 Copy calculator result</button>
- </div>
- <p class="error" id="error" role="status"></p>
+<div class="app">
+  <div class="header">
+    <img class="logo" src="logo.png" alt="MONEY STUDIO Logo">
+    <h1>MONEY STUDIO</h1>
+    <div class="subtitle">TRADING REWARDS HUB</div>
+    <div class="live"><span class="dot"></span>LIVE TRACKING HUB</div>
+  </div>
+
+  <a class="card green" href="tracker/index.html" id="tracker">
+    <div class="icon">⚡</div>
+    <h2>LIVE TURNOVER TRACKER</h2>
+    <p>Verify your Trader ID, track turnover progress and unlock rewards.</p>
+  </a>
+
+  <a class="card blue" href="calculator/index.html" id="calculator">
+    <div class="icon">📊</div>
+    <h2>TURNOVER CALCULATOR</h2>
+    <p>Calculate turnover targets and reward milestones.</p>
+  </a>
+<a class="card green"
+   href="https://t.me/moneystudiovipbot"
+   id="vip">
+  <div class="icon">👑</div>
+  <h2>VIP ACCESS</h2>
+  <p>Join MONEY STUDIO VIP and explore exclusive trading services.</p>
+</a>
+  <div class="grid">
+    <a class="card small" href="rules/index.html" id="rules">
+      <div class="icon">📖</div>
+      <h2>RULES</h2>
+    </a>
+    <a class="card small"
+       href="contact/index.html">
+      <div class="icon">🎧</div>
+      <h2>CONTACT</h2>
+    </a>
+  </div>
+
+  <div class="warning">
+    ⚠️ <strong>IMPORTANT:</strong> Do not withdraw before completing your target.
+    Any withdrawal resets your turnover progress to ZERO.
+  </div>
+
+  <div class="footer">POWERED BY MONEY STUDIO</div>
 </div>
+
 <script>
-const multipliers=[50,100,500,1000,5000,10000];
-const money=n=>"$"+n.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:2});
-let currentResult="";
-function calculate(){
- const raw=document.getElementById("balance").value;
- const balance=Number(raw);
- const results=document.getElementById("results"),error=document.getElementById("error");
- if(!raw.trim()||!Number.isFinite(balance)||balance<10||!Number.isFinite(balance*10000)||balance*10000>1e15){results.style.display="none";error.textContent="Please enter a valid balance of at least $10.";return;}
- results.style.display="block";error.textContent="";
- const rows=multipliers.map(m=>({turnover:balance*m,reward:balance*m*.1}));
- document.getElementById("minimum").textContent=money(rows[0].turnover);
- document.getElementById("reward").textContent=money(rows[0].reward);
- const tbody=document.getElementById("breakdown");tbody.replaceChildren();
- rows.forEach((r,i)=>{const tr=document.createElement("tr"),turn=document.createElement("td"),reward=document.createElement("td");turn.textContent=money(r.turnover);if(i===0){const min=document.createElement("span");min.className="min";min.textContent="Min.";turn.append(min)}reward.textContent=money(r.reward);tr.append(turn,reward);tbody.append(tr)});
- currentResult=`MS TURNOVER CALCULATOR\nBalance: ${money(balance)}\nMinimum Turnover: ${money(rows[0].turnover)}\n\n`+rows.map(r=>`${money(r.turnover)} turnover → ${money(r.reward)} reward`).join("\n")+"\n\nIf you withdraw your profit or balance, your turnover resets to $0.";
- results.classList.remove("animate");void results.offsetWidth;results.classList.add("animate");
-}
-document.getElementById("balance").addEventListener("input",calculate);
-document.getElementById("copy").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(currentResult);const button=document.getElementById("copy");button.textContent="✓ Copied!";setTimeout(()=>button.textContent="📋 Copy calculator result",1600)}catch{alert("Clipboard access is unavailable here. Open the calculator through a local web server to enable copying.")}});
-calculate();
+document.querySelectorAll('a[href="#"]').forEach(link=>{
+  link.addEventListener("click",event=>{
+    event.preventDefault();
+    alert("This section will be connected in the next step.");
+  });
+});
 </script>
 </body>
 </html>

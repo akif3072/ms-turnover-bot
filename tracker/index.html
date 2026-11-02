@@ -1,0 +1,541 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MONEY STUDIO | Live Tracker</title>
+
+<style>
+:root{
+  --bg:#080f1e;
+  --panel:#132137;
+  --green:#43ff9b;
+  --blue:#72d8ff;
+  --red:#ff6174;
+  --gold:#ffca58;
+  --muted:#aabbd1;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(
+    ellipse at top,#17344c,var(--bg) 70%
+  );
+  color:white;
+  font-family:-apple-system,BlinkMacSystemFont,
+    "Segoe UI",sans-serif;
+}
+
+.app{
+  max-width:480px;
+  margin:auto;
+  padding:24px 18px 40px;
+}
+
+.back{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:13px;
+}
+
+.header{
+  text-align:center;
+  margin:25px 0;
+}
+
+.logo{
+  width:175px;
+  max-width:80%;
+  border-radius:10px;
+}
+
+h1{
+  font-size:23px;
+  letter-spacing:1px;
+  margin:20px 0 7px;
+}
+
+.subtitle{
+  color:var(--green);
+  font-size:11px;
+  letter-spacing:3px;
+}
+
+.live{
+  display:inline-block;
+  margin-top:17px;
+  padding:8px 16px;
+  border:1px solid #28795c;
+  border-radius:30px;
+  color:var(--green);
+  font-size:11px;
+  letter-spacing:2px;
+}
+
+.dot{
+  display:inline-block;
+  width:7px;
+  height:7px;
+  background:var(--green);
+  border-radius:50%;
+  margin-right:7px;
+  box-shadow:0 0 12px var(--green);
+  animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+  50%{opacity:.3;transform:scale(.7)}
+}
+
+.panel{
+  background:var(--panel);
+  border:1px solid #2b4860;
+  border-radius:20px;
+  padding:23px 19px;
+  box-shadow:0 12px 35px #0003;
+}
+
+h2{
+  font-size:19px;
+  margin:0 0 12px;
+}
+
+.desc{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.7;
+}
+
+label{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin:20px 0 9px;
+}
+
+input{
+  width:100%;
+  padding:17px;
+  border:1px solid #38516d;
+  border-radius:12px;
+  background:#091525;
+  color:white;
+  font-size:22px;
+  outline:none;
+  letter-spacing:3px;
+}
+
+input:focus{
+  border-color:var(--green);
+  box-shadow:0 0 12px #43ff9b22;
+}
+
+.broker{
+  margin-top:13px;
+  color:var(--blue);
+  font-size:13px;
+  min-height:20px;
+}
+
+button{
+  width:100%;
+  padding:17px;
+  margin-top:22px;
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(
+    100deg,#32ed90,#36cbb8
+  );
+  color:#071a18;
+  font-weight:800;
+  font-size:15px;
+  cursor:pointer;
+  box-shadow:0 5px 20px #32ed9022;
+}
+
+button:active{
+  transform:scale(.98);
+}
+
+.notice{
+  margin-top:18px;
+  border:1px solid #69404b;
+  background:#341b27;
+  color:#ffd3dc;
+  padding:15px;
+  border-radius:12px;
+  font-size:12px;
+  line-height:1.7;
+}
+
+.message{
+  margin-top:16px;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.error{color:var(--red)}
+.success{color:var(--green)}
+
+.footer{
+  text-align:center;
+  color:#70839f;
+  font-size:10px;
+  letter-spacing:2px;
+  margin-top:35px;
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <a class="back" href="../index.html">
+    ← BACK TO MENU
+  </a>
+
+  <div class="header">
+    <img
+      class="logo"
+      src="../logo.png"
+      alt="MONEY STUDIO Logo"
+    >
+
+    <h1>LIVE TURNOVER TRACKER</h1>
+
+    <div class="subtitle">
+      VERIFY • REGISTER • TRACK
+    </div>
+
+    <div class="live">
+      <span class="dot"></span>
+      TRADER ID TRACKING
+    </div>
+  </div>
+
+  <div class="panel">
+
+    <h2>⚡ Register Trader ID</h2>
+
+    <p class="desc">
+      Enter your Binolla or Quotex Trader ID.
+      You can enter your ID with or without #.
+      Your broker will be detected automatically.
+    </p>
+
+    <label for="traderId">
+      YOUR TRADER ID
+    </label>
+
+    <input
+      id="traderId"
+      type="text"
+      inputmode="numeric"
+      maxlength="9"
+      placeholder="601281 or #601281"
+      autocomplete="off"
+    >
+
+    <div class="broker" id="broker">
+      Waiting for Trader ID...
+    </div>
+
+    <button id="register" type="button">
+      VERIFY TRADER ID →
+    </button>
+
+    <div
+      class="message"
+      id="message"
+      role="status"
+    ></div>
+
+  </div>
+
+  <div class="notice">
+    ⚠️ <strong>IMPORTANT WITHDRAWAL RULE</strong>
+    <div>
+      Do not withdraw before achieving your
+      turnover target. Any withdrawal resets
+      your turnover progress to ZERO.
+    </div>
+  </div>
+
+  <div class="footer">
+    POWERED BY MONEY STUDIO
+  </div>
+
+</div>
+
+<script>
+const input = document.getElementById("traderId");
+const broker = document.getElementById("broker");
+const message = document.getElementById("message");
+
+function normalizeTraderId(value){
+  // Accept an optional # only at the beginning.
+  const trimmed = value.trim();
+
+  if(!/^#?\d+$/.test(trimmed)){
+    return null;
+  }
+
+  return trimmed.startsWith("#")
+    ? trimmed.slice(1)
+    : trimmed;
+}
+
+function detectBroker(id){
+  if(!id)return null;
+
+  if(/^\d{6}$/.test(id)){
+    return "Binolla";
+  }
+
+  if(/^\d{8}$/.test(id)){
+    return "Quotex";
+  }
+
+  return null;
+}
+
+input.addEventListener("input",()=>{
+  const id = normalizeTraderId(input.value);
+  const detected = detectBroker(id);
+
+  if(detected){
+    broker.textContent =
+      "✓ Broker detected: " + detected;
+    broker.style.color = "#43ff9b";
+  }else{
+    broker.textContent =
+      "Enter a 6-digit Binolla or 8-digit Quotex ID";
+    broker.style.color = "#72d8ff";
+  }
+
+  message.textContent = "";
+});
+
+
+const registerButton = document.getElementById("register");
+
+registerButton.addEventListener("click", async () => {
+  const id = normalizeTraderId(input.value);
+  const broker = detectBroker(id);
+
+  if (!broker) {
+    message.className = "message error";
+    message.textContent =
+      "Invalid Trader ID. Enter 6 digits for Binolla or 8 digits for Quotex.";
+    return;
+  }
+
+  message.textContent = "";
+  message.className = "message";
+
+  // Replace button with countdown
+  const countdown = document.createElement("div");
+  countdown.style.cssText = `
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #27e69b;
+    border-radius: 16px;
+    background: #102b31;
+    color: #31f7aa;
+  `;
+
+  countdown.innerHTML = `
+    <div style="font-size:13px;letter-spacing:2px">
+      ⚡ VERIFYING TRADER ID
+    </div>
+    <div id="timerNumber"
+      style="font-size:76px;font-weight:900;line-height:1.3">
+      15
+    </div>
+    <div id="timerStatus" style="font-size:13px">
+      Checking ${broker} account...
+    </div>
+  `;
+
+  registerButton.replaceWith(countdown);
+
+  let seconds = 15;
+  const timerNumber = countdown.querySelector("#timerNumber");
+  const timerStatus = countdown.querySelector("#timerStatus");
+
+  const timer = setInterval(() => {
+    seconds--;
+
+    if (seconds > 0) {
+      timerNumber.textContent = seconds;
+    } else {
+      clearInterval(timer);
+      timerNumber.textContent = "⏳";
+      timerStatus.textContent = "Still verifying...";
+    }
+  }, 1000);
+
+
+  // Connect to local MONEY STUDIO backend
+  try {
+    const response = await fetch("http://127.0.0.1:8000/verify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        traderId: id
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.status === "sample_only") {
+      completeTraderVerification({
+        verified: false,
+        error: "Backend connected successfully. Sample data only — live broker verification is not connected yet."
+      });
+    } else {
+      completeTraderVerification(result);
+    }
+  } catch (error) {
+    completeTraderVerification({
+      verified: false,
+      error: "Cannot connect to MONEY STUDIO backend. Check that the Python server is running."
+    });
+  }
+
+    function completeTraderVerification(result) {
+    clearInterval(timer);
+
+    if (!result || !result.verified) {
+      countdown.replaceWith(registerButton);
+      message.className = "message error";
+      message.textContent =
+        result?.error || "Trader verification failed.";
+      return;
+    }
+
+// Verification successful — open dashboard automatically
+countdown.remove();
+message.textContent = "";
+
+showProgressDashboard({
+  broker: broker,
+  traderId: id,
+  balance: result.balance,
+  liveBalance: result.liveBalance,
+  reward: result.reward,
+  progress: result.progress,
+  target: result.target
+});
+  }
+});
+
+
+function showProgressDashboard(data) {
+  const existing = document.getElementById("msProgress");
+  if (existing) existing.remove();
+
+  const progress = Math.max(0, Number(data.progress) || 0);
+  const target = Math.max(0, Number(data.target) || 0);
+  const percent = target > 0
+    ? Math.min(100, progress / target * 100)
+    : 0;
+
+  const remaining = Math.max(0, target - progress);
+  const money = n => "$" + Number(n).toLocaleString(
+    "en-US", {minimumFractionDigits:2, maximumFractionDigits:2}
+  );
+
+  const dashboard = document.createElement("section");
+  dashboard.id = "msProgress";
+  dashboard.style.cssText = `
+    margin:25px auto;
+    padding:24px;
+    border:1px solid #29e7a0;
+    border-radius:22px;
+    background:#112238;
+    color:white;
+    max-width:650px;
+    box-shadow:0 0 35px #20e89b18;
+    animation:msAppear .5s ease both;
+  `;
+
+  dashboard.innerHTML = `
+    <div style="color:#35f5a7;font-weight:800">
+      ⚡ MONEY STUDIO LIVE PROGRESS
+    </div>
+
+    <h2 style="margin:15px 0">
+      ${data.broker} • Trader #${data.traderId}
+    </h2>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      ${[
+        ["Qualifying Balance",money(data.balance)],
+        ["Live Quotex Balance",money(data.liveBalance)],
+        ["Reward",money(data.reward)],
+        ["Turnover Completed",money(progress)],
+        ["Turnover Target",money(target)]
+      ].map(([label,value]) => `
+        <div style="background:#192e46;padding:15px;border-radius:14px">
+          <div style="font-size:12px;color:#a7bdd3">${label}</div>
+          <div style="font-size:22px;font-weight:900;margin-top:7px">
+            ${value}
+          </div>
+        </div>
+      `).join("")}
+    </div>
+
+    <div style="display:flex;justify-content:space-between;
+                margin-top:25px;font-weight:800">
+      <span>TURNOVER PROGRESS</span>
+      <span style="color:#35f5a7">${percent.toFixed(1)}%</span>
+    </div>
+
+    <div style="height:17px;background:#29415a;border-radius:30px;
+                margin-top:12px;overflow:hidden">
+      <div id="msProgressFill" style="height:100%;width:0%;
+           background:linear-gradient(90deg,#16e78d,#42e6d2);
+           border-radius:30px;transition:width 1.3s ease"></div>
+    </div>
+
+    <p style="color:#b3c5d7">
+      ${money(remaining)} remaining to reach your target
+    </p>
+
+    <div style="background:#40212d;color:#ffc3cc;
+                border-radius:12px;padding:14px;margin-top:20px">
+      ⚠ Do not withdraw before completing your target.
+      Any withdrawal resets turnover progress to ZERO.
+    </div>
+  `;
+
+  document.body.appendChild(dashboard);
+
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes msAppear {
+      from {opacity:0;transform:translateY(20px) scale(.97)}
+      to {opacity:1;transform:translateY(0) scale(1)}
+    }
+  `;
+  document.head.appendChild(style);
+
+  requestAnimationFrame(() => {
+    dashboard.querySelector("#msProgressFill").style.width =
+      percent + "%";
+  });
+
+  dashboard.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+</script>
+
+</body>
+</html>
