@@ -382,17 +382,24 @@ registerButton.addEventListener("click", async () => {
 
   // Connect to local MONEY STUDIO backend
   try {
-    const response = await fetch("http://127.0.0.1:8000/verify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        traderId: id
-      })
-    });
+    const response = await fetch(
+  "https://money-studio-live-tracker.onrender.com/verify",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      traderId: id
+    })
+  }
+);
 
-    const result = await response.json();
+console.log("INITIAL VERIFY STATUS:", response.status);
+
+const result = await response.json();
+
+console.log("INITIAL VERIFY RESULT:", result);
 
     if (result.status === "sample_only") {
       completeTraderVerification({
@@ -403,11 +410,13 @@ registerButton.addEventListener("click", async () => {
       completeTraderVerification(result);
     }
   } catch (error) {
-    completeTraderVerification({
-      verified: false,
-      error: "Cannot connect to MONEY STUDIO backend. Check that the Python server is running."
-    });
-  }
+  console.error("INITIAL VERIFY ERROR:", error);
+
+  completeTraderVerification({
+    verified: false,
+    error: error.message || "Verification request failed."
+  });
+}
 
     function completeTraderVerification(result) {
     clearInterval(timer);
@@ -421,6 +430,8 @@ registerButton.addEventListener("click", async () => {
     }
 
 // Verification successful — open dashboard automatically
+localStorage.setItem("msTraderId", id);
+
 countdown.remove();
 message.textContent = "";
 
@@ -513,10 +524,72 @@ function showProgressDashboard(data) {
                 border-radius:12px;padding:14px;margin-top:20px">
       ⚠ Do not withdraw before completing your target.
       Any withdrawal resets turnover progress to ZERO.
+      <button id="msRefreshButton" type="button"
+style="margin-top:15px;width:100%;padding:15px;
+background:#123c36;color:#43ff9b;font-weight:800;
+border:1px solid #29e7a0;border-radius:12px;">
+↻ CHECK NOW
+</button>
+
+<div id="msRefreshStatus"
+style="text-align:center;margin-top:10px;font-size:12px;">
+</div>
     </div>
   `;
 
   document.body.appendChild(dashboard);
+  const refreshButton = dashboard.querySelector("#msRefreshButton");
+const refreshStatus = dashboard.querySelector("#msRefreshStatus");
+
+refreshButton.addEventListener("click", async () => {
+    refreshButton.disabled = true;
+    refreshButton.textContent = "CHECKING...";
+    refreshStatus.textContent = "Fetching latest broker statistics...";
+
+    try {
+        const traderId = localStorage.getItem("msTraderId");
+
+        const response = await fetch("https://money-studio-live-tracker.onrender.com/verify", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ traderId })
+        });
+
+        const result = await response.json();
+        console.log("VERIFY STATUS:", response.status);
+        console.log("VERIFY RESULT:", result);
+
+        if (!response.ok || !result.verified) {
+            throw new Error(result.error || "Refresh failed.");
+        }
+
+        showProgressDashboard({
+            broker: result.broker,
+            traderId: result.traderId,
+            balance: result.balance,
+            liveBalance: result.liveBalance,
+            reward: result.reward,
+            progress: result.progress,
+            target: result.target
+        });
+
+        document.getElementById("msRefreshStatus").textContent =
+            "✓ Updated successfully";
+
+    } catch (error) {
+        console.error("VERIFY ERROR:", error);
+        refreshStatus.textContent = error.message;
+    } finally {
+        const button = document.getElementById("msRefreshButton");
+
+        if (button) {
+            button.disabled = false;
+            button.textContent = "↻ CHECK NOW";
+        }
+    }
+});
 
   const style = document.createElement("style");
   style.textContent = `
@@ -534,7 +607,20 @@ function showProgressDashboard(data) {
 
   dashboard.scrollIntoView({behavior:"smooth",block:"start"});
 }
+// Restore previously verified trader after refresh
+window.addEventListener("load", () => {
+    const savedTraderId = localStorage.getItem("msTraderId");
 
+    if (savedTraderId) {
+        input.value = savedTraderId;
+
+        input.dispatchEvent(new Event("input"));
+
+        setTimeout(() => {
+            registerButton.click();
+        }, 500);
+    }
+});
 </script>
 
 </body>
