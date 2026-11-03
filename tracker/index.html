@@ -321,6 +321,31 @@ input.addEventListener("input",()=>{
 });
 
 
+async function requestVerification(traderId) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 75000);
+
+  try {
+    const response = await fetch("https://money-studio-live-tracker.onrender.com/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ traderId }),
+      signal: controller.signal
+    });
+    const result = await response.json();
+    if (!result || typeof result !== "object" || Array.isArray(result)) {
+      throw new Error("Invalid verification response.");
+    }
+    return { response, result };
+  } catch {
+    throw new Error(controller.signal.aborted
+      ? "Verification took too long. Please try again."
+      : "Couldn’t reach the verification service. Please try again.");
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 const registerButton = document.getElementById("register");
 
 registerButton.addEventListener("click", async () => {
@@ -354,7 +379,7 @@ registerButton.addEventListener("click", async () => {
     </div>
     <div id="timerNumber"
       style="font-size:76px;font-weight:900;line-height:1.3">
-      15
+      5
     </div>
     <div id="timerStatus" style="font-size:13px">
       Checking ${broker} account...
@@ -363,7 +388,7 @@ registerButton.addEventListener("click", async () => {
 
   registerButton.replaceWith(countdown);
 
-  let seconds = 15;
+  let seconds = 5;
   const timerNumber = countdown.querySelector("#timerNumber");
   const timerStatus = countdown.querySelector("#timerStatus");
 
@@ -380,26 +405,12 @@ registerButton.addEventListener("click", async () => {
   }, 1000);
 
 
-  // Connect to local MONEY STUDIO backend
   try {
-    const response = await fetch(
-  "https://money-studio-live-tracker.onrender.com/verify",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      traderId: id
-    })
-  }
-);
+    const { response, result } = await requestVerification(id);
 
-console.log("INITIAL VERIFY STATUS:", response.status);
-
-const result = await response.json();
-
-console.log("INITIAL VERIFY RESULT:", result);
+    if (!response.ok) {
+      throw new Error(result.error || "Verification is temporarily unavailable. Please try again.");
+    }
 
     if (result.status === "sample_only") {
       completeTraderVerification({
@@ -549,17 +560,7 @@ refreshButton.addEventListener("click", async () => {
     try {
         const traderId = localStorage.getItem("msTraderId");
 
-        const response = await fetch("https://money-studio-live-tracker.onrender.com/verify", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ traderId })
-        });
-
-        const result = await response.json();
-        console.log("VERIFY STATUS:", response.status);
-        console.log("VERIFY RESULT:", result);
+        const { response, result } = await requestVerification(traderId);
 
         if (!response.ok || !result.verified) {
             throw new Error(result.error || "Refresh failed.");
